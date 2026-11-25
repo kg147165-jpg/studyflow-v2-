@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>StudyFlow 2.0</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Figtree:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#F4F5FA;--sf:#fff;--ink:#1A2038;--mut:#5B6380;--line:#E1E4F0;--ac:#3A55D6;--acs:#E8ECFF;--rb:#7C5CE0;--rbs:#EFEAFF;--ok:#1B7F54;--oks:#E2F5EC;--wn:#9A5B0B;--wns:#FDF0DA;--bd:#B93A1A;--bds:#FDE8E2;
+--hd:'Bricolage Grotesque',system-ui,sans-serif;--bt:'Figtree',system-ui,sans-serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#11152A;--sf:#1B2142;--ink:#EDEFF9;--mut:#A0A8C8;--line:#2C3560;--ac:#93A6FF;--acs:#262F63;--rb:#B9A6FF;--rbs:#2E2860;--ok:#58D19B;--oks:#16342A;--wn:#F0B35A;--wns:#3A2C12;--bd:#FF9C80;--bds:#3D1D14}}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--bt)}
+h1,h2,h3{font-family:var(--hd);margin:0;letter-spacing:-.01em}h1{font-size:28px}h2{font-size:19px}h3{font-size:16px}
+button,input,select,textarea{font:inherit;color:inherit}
+.app{display:grid;grid-template-columns:210px 1fr;min-height:100vh}
+nav{background:var(--sf);border-right:1px solid var(--line);padding:20px 12px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px}
+.logo{display:flex;align-items:center;gap:10px;font:700 20px var(--hd);padding:0 8px 18px}
+nav button{display:flex;gap:10px;align-items:center;background:none;border:0;padding:10px 12px;border-radius:12px;cursor:pointer;color:var(--mut);font-weight:600;text-align:left}
+nav button[aria-current=page]{background:var(--acs);color:var(--ac)}
+nav button:hover{background:var(--bg)}
+main{padding:28px;max-width:1040px;width:100%}
+.g{display:grid;gap:16px}.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}
+.card{background:var(--sf);border:1px solid var(--line);border-radius:18px;padding:18px}
+.card.rb{background:var(--rbs);border-color:transparent}
+.mut{color:var(--mut)}.sm{font-size:13px}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.sp{justify-content:space-between}
+.btn{border:1px solid var(--line);background:var(--sf);border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:600}
+.btn.p{background:var(--ac);border-color:var(--ac);color:#fff}[data-theme=dark] .btn.p{color:#111}
+.btn.s{padding:4px 9px;font-size:13px}.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.d{color:var(--bd)}
+:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+input,select,textarea{background:var(--sf);border:1px solid var(--line);border-radius:10px;padding:8px 10px;width:100%}
+textarea{min-height:110px;resize:vertical}
+.tag{display:inline-block;border-radius:99px;padding:1px 9px;font-size:12px;font-weight:600;background:var(--acs);color:var(--ac)}
+.tag.ok{background:var(--oks);color:var(--ok)}.tag.wn{background:var(--wns);color:var(--wn)}.tag.bd{background:var(--bds);color:var(--bd)}
+.bar{height:8px;border-radius:9px;background:var(--line);overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}
+.bar.u i{background:var(--ok)}
+.clock{font:700 56px var(--hd);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.li{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}.li:first-child{border-top:0}
+.li>.grow{flex:1;min-width:0}
+details>summary{cursor:pointer;font-weight:600}
+dialog{border:1px solid var(--line);border-radius:18px;background:var(--sf);color:var(--ink);padding:22px;width:min(440px,92vw)}
+dialog::backdrop{background:rgba(10,14,35,.5)}
+label{display:block;font-size:13px;font-weight:600;margin:10px 0 4px}.err{color:var(--bd);font-size:13px}
+.msg{padding:10px 14px;border-radius:14px;margin:8px 0;max-width:88%;white-space:pre-wrap}
+.msg.u{background:var(--acs);margin-left:auto}.msg.r{background:var(--rbs)}
+.chat{max-height:380px;overflow:auto}
+.cols{display:flex;gap:6px;align-items:flex-end;height:90px}.cols div{flex:1;text-align:center;font-size:11px}.cols i{display:block;background:var(--ac);border-radius:6px 6px 0 0;min-height:2px}
+.breath{width:90px;height:90px;border-radius:50%;background:var(--rb);opacity:.55;margin:14px auto;animation:br 8s ease-in-out infinite}
+@keyframes br{50%{transform:scale(1.45)}}
+@media(prefers-reduced-motion:reduce){.breath{animation:none}}
+#toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9}
+#toast.on{opacity:1}
+.banner{background:var(--wns);color:var(--wn);border-radius:12px;padding:8px 14px;margin-bottom:16px}
+@media(max-width:860px){.app{grid-template-columns:1fr}
+nav{position:fixed;inset:auto 0 0 0;top:auto;height:auto;flex-direction:row;justify-content:space-around;border-right:0;border-top:1px solid var(--line);z-index:5;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px))}
+nav button{flex-direction:column;gap:2px;font-size:11px;padding:6px 8px}.logo{display:none}
+main{padding:18px 16px 96px}.g2,.g3{grid-template-columns:1fr}.clock{font-size:46px}}
+</style></head>
+<body><div class="app"><nav id="nav" aria-label="Primary"></nav><main id="main"></main></div>
+<dialog id="dlg"></dialog><div id="toast" role="status"></div>
+<script>
+const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9);
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const dayOf=n=>{const d=new Date();d.setDate(d.getDate()+n);return ymd(d)};
+const today=()=>dayOf(0);
+const daysTo=s=>Math.round((new Date(s+'T00:00:00')-new Date(today()+'T00:00:00'))/864e5);
+const ST=['Not started','In progress','Completed','Needs revision','Needs practice'];
+const K='studyflow2';
+function seed(){const T=(n,st,df)=>({id:uid(),n,st,df,rev:[]});
+return{sample:true,cfg:{ca:true,cm:false,rev:7},mood:[],cl:{sub:'',topic:'',material:'',items:[]},
+subs:[{id:'s1',n:'Physics',col:'#3A55D6',prio:'High',target:80,exam:dayOf(21),ch:[{id:uid(),n:'Modern Physics',t:[T('Atoms','Completed','Medium'),T('Nuclei','In progress','Hard'),T('Dual Nature of Radiation','Not started','Hard')]},{id:uid(),n:'Waves',t:[T('Electromagnetic Waves','Needs revision','Medium')]}]},
+{id:'s2',n:'Chemistry',col:'#1B7F54',prio:'High',target:80,exam:dayOf(26),ch:[{id:uid(),n:'Physical Chemistry',t:[T('Electrochemistry','In progress','Hard'),T('Chemical Kinetics','Needs practice','Medium')]}]},
+{id:'s3',n:'Mathematics',col:'#B93A1A',prio:'Medium',target:85,exam:'',ch:[{id:uid(),n:'Calculus',t:[T('Integrals','Needs practice','Hard'),T('Differential Equations','Not started','Medium')]}]}],
+tasks:[{id:uid(),title:'Physics numericals: Nuclei',sub:'s1',due:dayOf(-1),prio:'High',done:false,pp:0},{id:uid(),title:'Chemistry assignment',sub:'s2',due:today(),prio:'Medium',done:false,pp:0},{id:uid(),title:'Integrals worksheet',sub:'s3',due:dayOf(2),prio:'Medium',done:false,pp:1}],
+sess:[[-3,'s1',40,45],[-2,'s2',50,50],[-1,'s1',25,25],[-1,'s3',35,45]].map(x=>({id:uid(),day:dayOf(x[0]),at:Date.now()+x[0]*864e5,sub:x[1],topic:'',mins:x[2],planned:x[3]})),tests:[]}}
+let S;try{S=JSON.parse(localStorage.getItem(K))}catch(e){}
+S=S||seed();
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+const sub=id=>S.subs.find(s=>s.id===id);
+const topics=()=>S.subs.flatMap(s=>s.ch.flatMap(c=>c.t.map(t=>({t,s,c}))));
+const accOf=ts=>ts.length?Math.round(100*ts[0].items.filter(i=>i.ok).length/ts[0].items.length):null;
+const tAcc=id=>accOf(S.tests.filter(x=>x.topic===id).sort((a,b)=>b.at-a.at));
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),2200)}
+const dlg=document.getElementById('dlg');
+function form(title,fields,ok,cb,note){dlg.innerHTML=`<form method="dialog"><h2>${E(title)}</h2>${note?`<p class="mut sm">${note}</p>`:''}${fields.map(f=>`<label for="f_${f.k}">${E(f.l)}</label>`+(f.o?`<select id="f_${f.k}">${f.o.map(o=>`<option ${o==f.v?'selected':''}>${E(o)}</option>`).join('')}</select>`:`<input id="f_${f.k}" type="${f.type||'text'}" value="${E(f.v??'')}">`)).join('')}<div class="err" id="ferr"></div><div class="row sp" style="margin-top:16px"><button type="button" class="btn" id="fx">Cancel</button><button class="btn p" id="fo">${E(ok)}</button></div></form>`;
+dlg.showModal();dlg.querySelector('input,select')?.focus();document.getElementById('fx').onclick=()=>dlg.close();
+dlg.querySelector('form').onsubmit=e=>{e.preventDefault();const v={};for(const f of fields){v[f.k]=document.getElementById('f_'+f.k).value.trim();if(f.req&&!v[f.k]){document.getElementById('ferr').textContent=f.l+' is required.';return}if(f.type==='number'&&v[f.k]&&(+v[f.k]<(f.min??0)||+v[f.k]>(f.max??1e4))){document.getElementById('ferr').textContent=f.l+' is out of range.';return}}dlg.close();cb(v)}}
+function confirmBox(msg,ok,cb,body){dlg.innerHTML=`<h2>${E(msg)}</h2>${body||''}<div class="row sp" style="margin-top:16px"><button class="btn" id="fx">Cancel</button><button class="btn p" id="fo">${E(ok)}</button></div>`;dlg.showModal();document.getElementById('fx').onclick=()=>dlg.close();document.getElementById('fo').onclick=()=>{dlg.close();cb()}}
+
+/* ---------- AI (configurable: uses the viewer's Claude via the sample capability; no keys in page) ---------- */
+const SM=(async()=>{try{return window.claude?await claude.use('sample'):null}catch(e){return null}})();
+let aiOK=null;SM.then(s=>{aiOK=!!s;if(V==='focus'||V==='rabbit'||V==='insights')render()});
+async function ai(p,json){const s=await SM;if(!s)throw{message:'AI is unavailable here. You can still add checklist items and test yourself manually.'};return json?await s.json(p,{cache:false}):(await s(p,{cache:false})).text}
+const aiErr=e=>e&&e.code==='not_granted'?'AI access was declined. Everything else still works.':(e&&e.message)||'The AI request failed. Try again in a moment.';
+
+/* ---------- Analyzer: deterministic, evidence-based ---------- */
+function recs(){const out=[];topics().forEach(({t,s,c})=>{let p=0,why=[],ev=[];const ts=S.tests.filter(x=>x.topic===t.id);const a=tAcc(t.id);const tg=s.target||75;
+if(t.st==='Completed'&&!ts.length){p+=2;why.push('marked complete but never tested');ev.push('0 assessments recorded')}
+if(t.st==='Needs revision'){p+=3;why.push('you flagged it for revision')}
+if(t.st==='Needs practice'){p+=3;why.push('you flagged it for more practice')}
+if(a!==null&&a<tg){p+=4;why.push('latest test is below your target');ev.push(`Latest test ${a}% vs target ${tg}%`)}
+if(t.st==='Not started'||t.st==='In progress'){p+=1;ev.push('Status: '+t.st)}
+const last=t.rev.length?t.rev[t.rev.length-1]:null;if(last&&-daysTo(last)>=S.cfg.rev){p+=2;why.push(`last revised ${-daysTo(last)} days ago`);ev.push('Revision interval set to '+S.cfg.rev+' days')}
+if(s.exam){const d=daysTo(s.exam);if(d>=0&&d<=30){p+=3;why.push(`${s.n} exam in ${d} days`);ev.push('Exam date you entered: '+s.exam)}}
+if(s.prio==='High')p+=1;
+if(p<3)return;const lab=p>=8?'High':p>=5?'Medium':'Low';
+out.push({p,lab,s,c,t,why:why.join('; ')||'in progress',ev,act:a!==null&&a<tg||t.st==='Needs practice'?'Short conceptual check, then numerical practice':ts.length?'Revise notes, then retest':'Self-test in Focus after reviewing the material',mins:lab==='High'?45:lab==='Medium'?30:20})});
+return out.sort((a,b)=>b.p-a.p)}
+const recHTML=r=>`<div class="li" style="align-items:flex-start"><div class="grow"><b>${E(r.s.n)} — ${E(r.t.n)}</b> <span class="tag ${r.lab==='High'?'bd':r.lab==='Medium'?'wn':''}">${r.lab}</span><div class="sm">Why: ${E(r.why)}.</div><div class="sm mut">Do: ${E(r.act)} · ~${r.mins} min</div><div class="sm mut">Evidence: ${E(r.ev.join(' · ')||'status only')}</div></div><button class="btn s" data-a="goFocus" data-id="${r.t.id}">Study</button></div>`;
+
+/* ---------- Views ---------- */
+let V=(location.hash||'#home').slice(1);if(!['home','planner','focus','insights','rabbit'].includes(V))V='home';
+const NAV=[['home','Home','⌂'],['planner','Planner','☰'],['focus','Focus','◔'],['insights','Insights','▤'],['rabbit','Rabbit','❀']];
+const rabbitSvg=(z=40)=>`<svg width="${z}" height="${z}" viewBox="0 0 48 48" aria-hidden="true"><ellipse cx="17" cy="12" rx="5" ry="11" fill="var(--rb)"/><ellipse cx="31" cy="12" rx="5" ry="11" fill="var(--rb)"/><ellipse cx="17" cy="13" rx="2.2" ry="7" fill="var(--rbs)"/><ellipse cx="31" cy="13" rx="2.2" ry="7" fill="var(--rbs)"/><circle cx="24" cy="31" r="14" fill="var(--rb)"/><circle cx="19" cy="29" r="2" fill="var(--sf)"/><circle cx="29" cy="29" r="2" fill="var(--sf)"/><path d="M21 35q3 3 6 0" stroke="var(--sf)" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`;
+function render(){document.getElementById('nav').innerHTML=`<div class="logo">${rabbitSvg(30)}StudyFlow</div>`+NAV.map(n=>`<button data-a="nav" data-id="${n[0]}" ${V===n[0]?'aria-current="page"':''}><span aria-hidden="true">${n[2]}</span>${n[1]}</button>`).join('');
+const sb=S.sample?`<div class="banner row sp"><span>Sample data is loaded so you can explore. It is not real.</span><button class="btn s" data-a="clearSample">Clear sample data</button></div>`:'';
+document.getElementById('main').innerHTML=sb+({home:vHome,planner:vPlanner,focus:vFocus,insights:vInsights,rabbit:vRabbit}[V])()}
+function vHome(){const t=today(),h=new Date().getHours(),mins=S.sess.filter(x=>x.day===t).reduce((a,x)=>a+x.mins,0);
+const open=S.tasks.filter(x=>!x.done).sort((a,b)=>a.due>b.due?1:-1),over=open.filter(x=>x.due&&x.due<t);const r=recs();
+const ex=S.subs.filter(s=>s.exam&&daysTo(s.exam)>=0).sort((a,b)=>a.exam>b.exam?1:-1);
+const msg=!S.subs.length?'Add your first subject in Planner and I’ll help you build from there.':over.length?`You have ${over.length} overdue task${over.length>1?'s':''}. That’s okay — Planner can suggest a gentler schedule, and nothing changes until you approve it.`:mins?`You’ve logged ${mins} min today. Want a quick check on what you covered?`:'Nothing logged yet today. A short session on your top recommendation is a good place to start.';
+return`<div class="row sp" style="margin-bottom:18px"><div><h1>Good ${h<12?'morning':h<17?'afternoon':'evening'}</h1><div class="mut">${new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'})} · ${mins} min focused today</div></div><button class="btn p" data-a="nav" data-id="focus">Start a focus session</button></div>
+<div class="g g2"><div class="card rb"><div class="row">${rabbitSvg(44)}<div class="grow" style="flex:1"><b>Rabbit</b><div>${E(msg)}</div></div></div></div>
+<div class="card"><h3>Today’s priorities</h3>${open.slice(0,4).map(x=>`<div class="li"><input type="checkbox" style="width:auto" data-c="tdone" data-id="${x.id}" aria-label="Done"><div class="grow">${E(x.title)}<div class="sm mut">${E(sub(x.sub)?.n||'General')} · ${x.due<t?'<span class="tag bd">overdue</span>':E(x.due||'no date')}</div></div></div>`).join('')||'<p class="mut">No open tasks. Add one in Planner.</p>'}</div>
+<div class="card"><h3>What to study next</h3><p class="sm mut">Calculated from your records and the targets you set.</p>${r.slice(0,2).map(recHTML).join('')||'<p class="mut">Not enough data yet. Add topics and take a test in Focus to get recommendations.</p>'}</div>
+<div class="card"><h3>Progress</h3>${S.subs.map(s=>{const a=s.ch.flatMap(c=>c.t),d=a.filter(x=>x.st==='Completed').length,tt=a.filter(x=>tAcc(x.id)!==null);const u=tt.length?Math.round(tt.reduce((q,x)=>q+tAcc(x.id),0)/tt.length):null;return`<div style="margin:10px 0"><div class="row sp sm"><b>${E(s.n)}</b><span class="mut">${d}/${a.length} covered · ${u===null?'not yet tested':u+'% tested accuracy'}</span></div><div class="bar"><i style="width:${a.length?100*d/a.length:0}%"></i></div></div>`}).join('')||'<p class="mut">No subjects yet.</p>'}<p class="sm mut">Blue = syllabus covered. Understanding is only shown once you’ve been tested.</p></div>
+<div class="card"><h3>Upcoming</h3>${[...open.filter(x=>x.due).slice(0,3).map(x=>[x.due,x.title]),...ex.slice(0,2).map(s=>[s.exam,s.n+' exam'])].sort().map(x=>`<div class="li"><span class="tag">${E(x[0])}</span><span>${E(x[1])}</span></div>`).join('')||'<p class="mut">No deadlines set.</p>'}</div></div>`}
+function vPlanner(){const t=today(),over=S.tasks.filter(x=>!x.done&&x.due&&x.due<t);
+return`<div class="row sp" style="margin-bottom:14px"><h1>Planner</h1><button class="btn p" data-a="addSub">Add subject</button></div><div class="g g2" style="align-items:start"><div class="g">${S.subs.map(s=>`<div class="card"><div class="row sp"><h2><span style="color:${E(s.col)}">●</span> ${E(s.n)}</h2><span class="row"><button class="btn s" data-a="editSub" data-id="${s.id}">Edit</button><button class="btn s d" data-a="delSub" data-id="${s.id}">Delete</button></span></div><div class="sm mut">Priority ${E(s.prio)} · target ${s.target}%${s.exam?' · exam '+E(s.exam):''}</div>
+${s.ch.map(c=>`<details open style="margin-top:10px"><summary>${E(c.n)} <button class="btn s d" data-a="delCh" data-id="${s.id}" data-x="${c.id}" aria-label="Delete chapter">✕</button></summary>${c.t.map(x=>{const a=tAcc(x.id);return`<div class="li"><div class="grow">${E(x.n)}<div class="sm mut">${E(x.df)}${x.rev.length?' · revised '+x.rev.length+'×, last '+E(x.rev[x.rev.length-1]):''}</div></div><span class="tag ${a===null?'':a>=s.target?'ok':'wn'}">${a===null?'untested':a+'%'}</span><select style="width:auto" data-c="tst" data-id="${x.id}" aria-label="Status">${ST.map(o=>`<option ${o===x.st?'selected':''}>${o}</option>`).join('')}</select><button class="btn s" data-a="rev" data-id="${x.id}">Revised</button><button class="btn s d" data-a="delTopic" data-id="${x.id}" aria-label="Delete topic">✕</button></div>`}).join('')}<button class="btn s" data-a="addTopic" data-id="${s.id}" data-x="${c.id}" style="margin-top:8px">Add topic</button></details>`).join('')}<button class="btn s" data-a="addCh" data-id="${s.id}" style="margin-top:10px">Add chapter</button></div>`).join('')||'<div class="card"><p class="mut">No subjects yet. Add one to start building your syllabus.</p></div>'}</div>
+<div class="card"><div class="row sp"><h2>Tasks</h2><button class="btn s p" data-a="addTask">Add task</button></div>${over.length?`<div class="banner" style="margin-top:12px">${over.length} overdue. <button class="btn s" data-a="recover">Suggest a recovery plan</button></div>`:''}${[...S.tasks].sort((a,b)=>a.done-b.done||(a.due>b.due?1:-1)).map(x=>`<div class="li"><input type="checkbox" style="width:auto" ${x.done?'checked':''} data-c="tdone" data-id="${x.id}" aria-label="Done"><div class="grow" style="${x.done?'text-decoration:line-through;opacity:.6':''}">${E(x.title)}<div class="sm mut">${E(sub(x.sub)?.n||'General')} · ${E(x.prio)} · ${E(x.due||'no date')}${x.pp?' · postponed '+x.pp+'×':''}</div></div><button class="btn s" data-a="post" data-id="${x.id}" ${x.done?'disabled':''}>+1 day</button><button class="btn s d" data-a="delTask" data-id="${x.id}" aria-label="Delete task">✕</button></div>`).join('')||'<p class="mut">No tasks yet.</p>'}
+<h3 style="margin-top:18px">Revision spacing</h3><label for="rv">Suggest revision again after (days)</label><input id="rv" type="number" min="1" max="60" value="${S.cfg.rev}" data-c="rev"><p class="sm mut">Your own interval — Rabbit and the Analyzer use it. Nothing is scheduled without you.</p></div></div>`}
+
+/* Focus */
+const T={mode:'focus',run:false,acc:0,t0:0,fm:25,bm:5};
+const el=()=>T.acc+(T.run?Date.now()-T.t0:0);
+const fmt=ms=>{const s=Math.abs(Math.round(ms/1000));return(ms<0?'+':'')+String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+let A=null,busy='';
+function vFocus(){const C=S.cl,done=C.items.filter(i=>i.done).length,all=C.items.length&&done===C.items.length;const tp=topics().filter(x=>x.s.id===C.sub);
+const recent=S.sess.filter(x=>x.day===today()).length;
+return`<h1 style="margin-bottom:14px">Focus</h1><div class="g g2" style="align-items:start"><div class="g"><div class="card"><div class="row"><div style="flex:1"><label for="fs">Subject</label><select id="fs" data-c="fsub"><option value="">Choose…</option>${S.subs.map(s=>`<option value="${s.id}" ${s.id===C.sub?'selected':''}>${E(s.n)}</option>`).join('')}</select></div><div style="flex:1"><label for="ft">Topic</label><select id="ft" data-c="ftopic"><option value="">Any</option>${tp.map(x=>`<option value="${x.t.id}" ${x.t.id===C.topic?'selected':''}>${E(x.t.n)}</option>`).join('')}</select></div></div>
+<div class="row" style="margin-top:6px"><div style="flex:1"><label for="fm">Focus (min)</label><input id="fm" type="number" min="1" max="180" value="${T.fm}" data-c="fm"></div><div style="flex:1"><label for="bm">Break (min)</label><input id="bm" type="number" min="1" max="60" value="${T.bm}" data-c="bm"></div></div>
+<div style="text-align:center;margin:14px 0"><div class="mut sm">${T.mode==='focus'?'Focus':'Break'}</div><div class="clock" id="clock">${fmt((T.mode==='focus'?T.fm:T.bm)*6e4-el())}</div></div>
+<div class="row" style="justify-content:center"><button class="btn p" data-a="tgl">${T.run?'Pause':el()?'Resume':'Start'}</button>${T.mode==='focus'?`<button class="btn" data-a="fin" ${el()<3e4?'disabled':''}>Finish &amp; log</button>`:''}<button class="btn d" data-a="cancel" ${!el()&&!T.run?'disabled':''}>Cancel</button><button class="btn" data-a="mode">${T.mode==='focus'?'Take a break':'Back to focus'}</button></div><p class="sm mut" style="text-align:center">${recent} session${recent===1?'':'s'} logged today. Time is logged only when you finish.</p></div>
+<div class="card"><h3>Today’s sessions</h3>${S.sess.filter(x=>x.day===today()).map(x=>`<div class="li"><span class="grow">${E(sub(x.sub)?.n||'General')}</span><span class="mut">${x.mins} min</span></div>`).join('')||'<p class="mut sm">Nothing logged yet.</p>'}</div></div>
+<div class="g"><div class="card"><h3>Learning material</h3><p class="sm mut">Paste text or load a .txt/.md file. Webpages can’t be fetched from here, so copy the article text instead. PDF extraction isn’t in this build.</p><textarea id="mat" aria-label="Learning material" data-c="mat" placeholder="Paste your notes or chapter text">${E(C.material)}</textarea><div class="row" style="margin-top:8px"><input type="file" id="fl" accept=".txt,.md,text/plain" style="width:auto" data-c="file" aria-label="Load text file"><button class="btn p" data-a="mkcl" ${busy?'disabled':''}>${busy==='cl'?'Analyzing…':'Generate checklist with AI'}</button></div>${aiOK===false?'<p class="err">AI isn’t available in this view. Add checklist items manually.</p>':''}<div id="clerr" class="err"></div></div>
+<div class="card"><div class="row sp"><h3>Checklist</h3><span class="sm mut">${done}/${C.items.length} done</span></div>${C.items.length?`<div class="bar" style="margin:8px 0"><i style="width:${100*done/C.items.length}%"></i></div>`:''}${C.items.map((i,k)=>`<div class="li"><input type="checkbox" style="width:auto" ${i.done?'checked':''} data-c="cli" data-id="${i.id}" aria-label="Done"><span class="grow">${E(i.t)}</span><button class="btn s" data-a="cup" data-id="${i.id}" aria-label="Move up" ${k?'':'disabled'}>↑</button><button class="btn s" data-a="ced" data-id="${i.id}">Edit</button><button class="btn s d" data-a="cdel" data-id="${i.id}" aria-label="Remove">✕</button></div>`).join('')||'<p class="mut sm">No items yet. Generate them from your material, or add your own.</p>'}<div class="row" style="margin-top:10px"><button class="btn s" data-a="cadd">Add item</button><button class="btn s p" data-a="test" ${C.items.length&&C.material.length>80&&!busy?'':'disabled'}>${busy==='t'?'Writing questions…':all?'Take an AI assessment':'Test me now'}</button></div><p class="sm mut">You decide what’s done. A finished checklist shows coverage, not mastery — the assessment tests understanding.</p><div id="terr" class="err"></div></div>
+${A?vTest():''}</div></div>`}
+function vTest(){if(A.sum)return`<div class="card"><h3>Assessment results</h3><div class="clock" style="font-size:40px">${A.sum.c}/${A.sum.n} <span class="mut sm">${A.sum.pct}%</span></div>${A.sum.cc.map(c=>`<div style="margin:8px 0" class="sm"><div class="row sp"><span>${E(c[0])}</span><span>${c[1]}%</span></div><div class="bar u"><i style="width:${c[1]}%"></i></div></div>`).join('')}<p class="sm"><b>Next steps:</b> ${A.sum.weak.length?'revisit '+E(A.sum.weak.join(', '))+' and retest. Repeated misses on a concept deserve a re-read, not more time on the same pass.':'solid result. Space a revision and try a harder test later.'}</p><details><summary>Review explanations</summary>${A.qs.map((q,i)=>`<div class="li" style="display:block"><b>${E(q.q)}</b><div class="sm">${A.res[i]?'<span class="tag ok">correct</span>':'<span class="tag bd">missed</span>'} Answer: ${E(q.type==='mcq'?q.options[q.answer]:q.answer)}</div><div class="sm mut">${E(q.explanation)}</div></div>`).join('')}</details><div class="row" style="margin-top:10px"><button class="btn p" data-a="test">Try another test${A.sum.weak.length?' (focus on weak concepts)':''}</button><button class="btn" data-a="closeT">Close</button></div><p class="sm mut">AI-generated questions.</p></div>`;
+const q=A.qs[A.i];return`<div class="card"><div class="row sp"><h3>Question ${A.i+1}/${A.qs.length}</h3><span class="tag">${E(q.concept)}</span></div><p><b>${E(q.q)}</b></p>${q.type==='mcq'?q.options.map((o,k)=>`<button class="btn" style="display:block;width:100%;text-align:left;margin:6px 0;${A.sel!==null?(k===q.answer?'border-color:var(--ok)':k===A.sel?'border-color:var(--bd)':''):''}" data-a="pick" data-id="${k}" ${A.sel!==null?'disabled':''}>${E(o)}</button>`).join(''):`<textarea id="sa" aria-label="Your answer" ${A.rev?'disabled':''}></textarea>${A.rev?`<p class="sm"><b>Model answer:</b> ${E(q.answer)}</p><div class="row"><button class="btn" data-a="self" data-id="1">I got it</button><button class="btn" data-a="self" data-id="0">Not yet</button></div>`:'<button class="btn" data-a="reveal" style="margin-top:6px">Reveal answer</button>'}`}${A.sel!==null?`<p class="sm"><b>${A.sel===q.answer?'Correct.':'Not quite.'}</b> ${E(q.explanation)}</p><button class="btn p" data-a="nextQ">${A.i+1<A.qs.length?'Next question':'See results'}</button>`:''}${q.source?`<p class="sm mut">Source in your material: “${E(q.source)}”</p>`:''}<p class="sm mut">AI-generated question.</p></div>`}
+
+/* Insights */
+function vInsights(){const t=today(),days=[...Array(7)].map((_,i)=>dayOf(i-6));const per=days.map(d=>S.sess.filter(x=>x.day===d).reduce((a,x)=>a+x.mins,0)),mx=Math.max(1,...per);
+const w=S.sess.filter(x=>days.includes(x.day));const bySub=S.subs.map(s=>[s.n,w.filter(x=>x.sub===s.id).reduce((a,x)=>a+x.mins,0)]).filter(x=>x[1]),tot=bySub.reduce((a,x)=>a+x[1],0);
+const pl=w.reduce((a,x)=>a+x.planned,0),ac=w.reduce((a,x)=>a+x.mins,0);const tk=S.tasks,dn=tk.filter(x=>x.done).length,pp=tk.filter(x=>x.pp);
+const miss={};S.tests.forEach(x=>x.items.filter(i=>!i.ok).forEach(i=>miss[i.concept]=(miss[i.concept]||0)+1));const rep=Object.entries(miss).filter(x=>x[1]>=2);
+const r=recs();
+return`<h1 style="margin-bottom:14px">Insights</h1><div class="g g2" style="align-items:start"><div class="card"><h3>Study time, last 7 days</h3><div class="cols">${per.map((m,i)=>`<div><i style="height:${m/mx*70}px" title="${m} min"></i>${days[i].slice(8)}</div>`).join('')}</div><p class="sm mut">${ac} min logged. Planned ${pl} min (the focus length you set) vs ${ac} actually completed. Time shows effort, not understanding.</p>${bySub.map(x=>`<div class="sm row sp"><span>${E(x[0])}</span><span class="mut">${x[1]} min · ${Math.round(100*x[1]/tot)}%</span></div>`).join('')}</div>
+<div class="card"><h3>Behaviour</h3><p>Tasks completed: <b>${tk.length?dn+'/'+tk.length:'—'}</b></p><p>Postponed at least once: <b>${pp.length}</b>${pp.length?' ('+E(pp.map(x=>x.title).join(', '))+')':''}</p><p>Active days this week: <b>${per.filter(Boolean).length}/7</b></p><p class="sm mut">Reported as counts on purpose — no combined “productivity score”.</p></div>
+<div class="card"><h3>Understanding (from assessments)</h3>${S.tests.length?[...S.tests].sort((a,b)=>b.at-a.at).slice(0,6).map(x=>`<div class="li"><span class="grow">${E(sub(x.sub)?.n||'General')}${x.topic?' — '+E(topics().find(y=>y.t.id===x.topic)?.t.n||''):''}<div class="sm mut">${new Date(x.at).toLocaleDateString()}</div></div><span class="tag">${accOf([x])}%</span></div>`).join(''):'<p class="mut">No assessments yet. Finish a checklist in Focus and take a test.</p>'}${rep.length?`<p class="sm"><b>Repeated mistakes:</b> ${E(rep.map(x=>x[0]+' ('+x[1]+'×)').join(', '))}</p>`:''}</div>
+<div class="card"><h3>Analyzer recommendations</h3>${r.slice(0,4).map(recHTML).join('')||'<p class="mut">Not enough data to recommend anything yet.</p>'}<div style="margin-top:10px"><button class="btn s" data-a="interp" ${busy==='i'||!r.length?'disabled':''}>${busy==='i'?'Thinking…':'Explain with AI'}</button></div><div id="interp">${A&&A.interp?`<div class="card rb sm" style="margin-top:10px"><span class="tag">AI interpretation</span><p style="white-space:pre-wrap">${E(A.interp)}</p></div>`:''}</div><p class="sm mut">Scores above come from your records. The AI explanation only restates them.</p></div></div>`}
+
+/* Rabbit */
+let R=[],breathing=false;
+function vRabbit(){const m=S.mood[S.mood.length-1],td=m&&m.day===today();
+return`<div class="row" style="margin-bottom:14px">${rabbitSvg(52)}<div><h1>Rabbit</h1><div class="mut">Study help, planning and a calm place to land. Not a therapist or doctor.</div></div></div>
+<div class="g g2" style="align-items:start"><div class="card"><div class="chat" id="chat" aria-live="polite">${R.map(x=>`<div class="msg ${x.r}">${E(x.t)}</div>`).join('')||'<p class="mut">Ask me to explain a concept, plan your evening, or tell me if you’re feeling stretched.</p>'}</div>
+<div class="row" style="margin:8px 0">${['Explain a concept simply','Plan my study evening','I feel overwhelmed'].map(q=>`<button class="btn s" data-a="quick" data-id="${E(q)}">${E(q)}</button>`).join('')}</div>
+<div class="row"><input id="ci" aria-label="Message Rabbit" placeholder="Message Rabbit" style="flex:1"><button class="btn p" data-a="send" ${busy==='r'?'disabled':''}>${busy==='r'?'…':'Send'}</button></div>${aiOK===false?'<p class="err">Chat needs AI, which isn’t available here. Breathing and check-ins still work.</p>':''}<p class="sm mut">AI-generated replies. Chats aren’t saved after you leave.</p></div>
+<div class="g"><div class="card rb"><h3>How are you feeling today?</h3><p class="sm mut">Optional. Stored only on this device and never used in academic scores.</p><div class="row">${['😣','😕','😐','🙂','😄'].map((e,i)=>`<button class="btn" data-a="mood" data-id="${i+1}" aria-label="Mood ${i+1} of 5" ${td&&m.v===i+1?'style="border-color:var(--rb);border-width:2px"':''}>${e}</button>`).join('')}</div></div>
+<div class="card"><h3>Breathe</h3>${breathing?`<div class="breath"></div><div id="bl" class="mut" style="text-align:center">Breathe in…</div><div style="text-align:center"><button class="btn s" data-a="breath">Stop</button></div>`:`<p class="sm mut">A one-minute slow breathing guide (4 seconds in, 4 out).</p><button class="btn" data-a="breath">Begin</button>`}</div>
+<div class="card"><h3>Privacy &amp; your data</h3><p class="sm mut">Choose what Rabbit can use. Nothing is sent unless you send a message.</p><div class="row"><input type="checkbox" id="ca" style="width:auto" ${S.cfg.ca?'checked':''} data-c="cfg" data-id="ca"><label for="ca" style="margin:0">Share study progress (time, tasks, test results)</label></div><div class="row"><input type="checkbox" id="cm" style="width:auto" ${S.cfg.cm?'checked':''} data-c="cfg" data-id="cm"><label for="cm" style="margin:0">Share my latest mood check-in</label></div><div class="row" style="margin-top:12px"><button class="btn s" data-a="export">Export my data</button><button class="btn s d" data-a="wipe">Delete all data</button></div><p class="sm mut">Data lives in this browser only. If you ever feel unsafe, please contact someone you trust or a local helpline.</p></div></div></div>`}
+function ctx(){const c=[];if(S.cfg.ca){const d7=S.sess.filter(x=>daysTo(x.day)>-7);c.push('Minutes studied in last 7 days by subject: '+(S.subs.map(s=>s.n+' '+d7.filter(x=>x.sub===s.id).reduce((a,x)=>a+x.mins,0)).join(', ')||'none'));c.push('Open tasks: '+S.tasks.filter(x=>!x.done).length+', overdue: '+S.tasks.filter(x=>!x.done&&x.due<today()).length);c.push('Latest test accuracy by topic: '+(topics().map(x=>[x.t.n,tAcc(x.t.id)]).filter(x=>x[1]!==null).map(x=>x[0]+' '+x[1]+'%').join(', ')||'no tests yet'))}
+if(S.cfg.cm&&S.mood.length)c.push('Latest self-reported mood (1-5): '+S.mood[S.mood.length-1].v);return c.join('\n')||'No student data shared.'}
+const CRISIS=/suicid|kill myself|end my life|self.?harm|hurt myself|want to die/i;
+async function send(txt){if(!txt||busy)return;R.push({r:'u',t:txt});
+if(CRISIS.test(txt)){R.push({r:'r',t:'I’m really glad you told me, and I’m sorry it feels this heavy. I can’t be the right support for this, so please reach out to someone now: a parent, a teacher, a friend, or a helpline. In India, Tele-MANAS is free on 14416. If you’re in immediate danger, call your local emergency number. I’m here to keep you company while you do.'});render();return}
+busy='r';render();
+try{const hist=R.slice(-9,-1).map(x=>(x.r==='u'?'Student: ':'Rabbit: ')+x.t).join('\n');
+const out=await ai(`You are Rabbit, a friendly, patient, non-judgmental study companion for a school or university student. Explain clearly and step by step for academic questions; be practical for planning; be calm and brief when the student is stressed (offer a break, a smaller first step, or breathing). Never diagnose, never claim to replace professionals; encourage trusted people or qualified help when appropriate. Only use the verified facts below; never invent study time, scores or progress. If you lack information, say so.\nVerified student facts:\n${ctx()}\nConversation so far:\n${hist}\nStudent: ${txt}\nReply concisely.`);R.push({r:'r',t:out})}catch(e){R.push({r:'r',t:aiErr(e)})}busy='';render();const c=document.getElementById('chat');if(c)c.scrollTop=1e5}
+
+/* ---------- Actions ---------- */
+const norm=s=>String(s).toLowerCase().replace(/\s+/g,' ').trim();
+const subF=s=>[{k:'n',l:'Name',v:s?.n,req:1},{k:'prio',l:'Priority',o:['High','Medium','Low'],v:s?.prio||'Medium'},{k:'target',l:'Target score (%)',type:'number',v:s?.target||80,min:1,max:100},{k:'exam',l:'Exam date (optional)',type:'date',v:s?.exam}];
+const act={
+nav:d=>{V=d.id;location.hash=V;render()},
+clearSample:()=>confirmBox('Clear all sample data?','Clear',()=>{S={...seed(),sample:false,subs:[],tasks:[],sess:[],tests:[]};save();render()},'<p class="mut sm">Your own entries are removed too if you added any.</p>'),
+addSub:()=>form('Add subject',subF(),'Add',v=>{S.subs.push({id:uid(),n:v.n,col:['#3A55D6','#1B7F54','#B93A1A','#7C5CE0','#9A5B0B'][S.subs.length%5],prio:v.prio,target:+v.target,exam:v.exam,ch:[]});save();render();toast('Subject added')}),
+editSub:d=>{const s=sub(d.id);form('Edit subject',subF(s),'Save',v=>{Object.assign(s,{n:v.n,prio:v.prio,target:+v.target,exam:v.exam});save();render();toast('Saved')})},
+delSub:d=>confirmBox('Delete '+sub(d.id).n+'?','Delete',()=>{S.subs=S.subs.filter(s=>s.id!==d.id);S.tasks.forEach(t=>t.sub===d.id&&(t.sub=''));save();render()},'<p class="mut sm">Its chapters and topics are removed. Logged sessions stay in your history.</p>'),
+addCh:d=>form('Add chapter',[{k:'n',l:'Chapter name',req:1}],'Add',v=>{sub(d.id).ch.push({id:uid(),n:v.n,t:[]});save();render()}),
+delCh:(d,b,e)=>{e.preventDefault();confirmBox('Delete this chapter?','Delete',()=>{const s=sub(d.id);s.ch=s.ch.filter(c=>c.id!==d.x);save();render()})},
+addTopic:d=>form('Add topic',[{k:'n',l:'Topic name',req:1},{k:'df',l:'Difficulty',o:['Easy','Medium','Hard'],v:'Medium'}],'Add',v=>{sub(d.id).ch.find(c=>c.id===d.x).t.push({id:uid(),n:v.n,st:'Not started',df:v.df,rev:[]});save();render()}),
+delTopic:d=>confirmBox('Delete this topic?','Delete',()=>{S.subs.forEach(s=>s.ch.forEach(c=>c.t=c.t.filter(t=>t.id!==d.id)));save();render()}),
+rev:d=>{topics().find(x=>x.t.id===d.id).t.rev.push(today());save();render();toast('Revision recorded. Test yourself to see if it stuck.')},
+addTask:()=>form('Add task',[{k:'title',l:'Task',req:1},{k:'sub',l:'Subject',o:['General',...S.subs.map(s=>s.n)]},{k:'due',l:'Due date',type:'date',v:today()},{k:'prio',l:'Priority',o:['High','Medium','Low'],v:'Medium'}],'Add',v=>{S.tasks.push({id:uid(),title:v.title,sub:S.subs.find(s=>s.n===v.sub)?.id||'',due:v.due,prio:v.prio,done:false,pp:0});save();render();toast('Task added')}),
+delTask:d=>{S.tasks=S.tasks.filter(t=>t.id!==d.id);save();render()},
+post:d=>{const t=S.tasks.find(x=>x.id===d.id);const n=new Date((t.due||today())+'T00:00:00');n.setDate(n.getDate()+1);t.due=ymd(n);t.pp++;save();render()},
+recover:()=>{const t=today(),o=S.tasks.filter(x=>!x.done&&x.due&&x.due<t).sort((a,b)=>({High:0,Medium:1,Low:2}[a.prio]-{High:0,Medium:1,Low:2}[b.prio]));const pl=[];o.forEach((x,i)=>{pl.push([x,dayOf(1+Math.floor(i/2))])});
+confirmBox('Suggested recovery plan','Apply plan',()=>{pl.forEach(p=>p[0].due=p[1]);save();render();toast('Plan applied')},`<p class="sm mut">Missed tasks aren’t failures. I ordered them by priority and spread them out at most 2 per day, starting tomorrow, so today and tomorrow aren’t overloaded. Existing deadlines aren’t checked against this, so adjust any that matter.</p>${pl.map(p=>`<div class="li"><span class="grow">${E(p[0].title)}</span><span class="tag">${p[1]}</span></div>`).join('')}`)},
+goFocus:d=>{const x=topics().find(y=>y.t.id===d.id);S.cl.sub=x.s.id;S.cl.topic=x.t.id;save();act.nav({id:'focus'})},
+tgl:()=>{if(T.run){T.acc+=Date.now()-T.t0;T.run=false}else{T.t0=Date.now();T.run=true}render()},
+cancel:()=>confirmBox('Cancel this session?','Discard time',()=>{T.run=false;T.acc=0;render()}),
+mode:()=>{T.mode=T.mode==='focus'?'break':'focus';T.run=false;T.acc=0;render()},
+fin:()=>{if(T.run){T.acc+=Date.now()-T.t0;T.run=false}const m=Math.max(1,Math.round(T.acc/6e4));S.sess.push({id:uid(),day:today(),at:Date.now(),sub:S.cl.sub,topic:S.cl.topic,mins:m,planned:T.fm});T.acc=0;save();render();toast(m+' min logged')},
+mkcl:async()=>{const m=S.cl.material.trim();const er=document.getElementById('clerr');if(m.length<80){er.textContent='Add at least a few sentences of material first.';return}
+busy='cl';render();try{const a=await ai(`From the study material below, list 4-10 distinct concepts or learning objectives a student should cover, in study order. Use only what the material contains. Return a JSON array of short strings.\nMATERIAL:\n${m.slice(0,12000)}`,true);if(!Array.isArray(a)||!a.length)throw{message:'The AI returned no usable checklist. Try with more material.'};S.cl.items=a.slice(0,12).map(t=>({id:uid(),t:String(t).slice(0,120),done:false}));save()}catch(e){busy='';render();document.getElementById('clerr').textContent=aiErr(e);return}busy='';render();toast('Checklist ready — edit freely')},
+cadd:()=>form('Add checklist item',[{k:'t',l:'Concept',req:1}],'Add',v=>{S.cl.items.push({id:uid(),t:v.t,done:false});save();render()}),
+ced:d=>{const i=S.cl.items.find(x=>x.id===d.id);form('Edit item',[{k:'t',l:'Concept',v:i.t,req:1}],'Save',v=>{i.t=v.t;save();render()})},
+cdel:d=>{S.cl.items=S.cl.items.filter(x=>x.id!==d.id);save();render()},
+cup:d=>{const a=S.cl.items,k=a.findIndex(x=>x.id===d.id);[a[k-1],a[k]]=[a[k],a[k-1]];save();render()},
+test:async()=>{const weak=A&&A.sum?A.sum.weak:[];busy='t';render();try{const q=await ai(`Write 6 questions that test understanding of the study material below, mixing 'mcq' and 'short' types. Each question's concept must be exactly one of: ${JSON.stringify(S.cl.items.map(i=>i.t))}.${weak.length?' Emphasise these weak concepts: '+JSON.stringify(weak)+'.':''} Ground every question in the material only. Return a JSON array of objects: {concept, type, q, options (4 strings, mcq only), answer (mcq: index 0-3; short: model answer), explanation, source (an exact phrase of at most 12 words copied verbatim from the material that supports the answer, or empty string)}.\nMATERIAL:\n${S.cl.material.slice(0,12000)}`,true);
+const nm=norm(S.cl.material);const qs=(Array.isArray(q)?q:[]).filter(x=>x&&x.q&&x.explanation&&(x.type==='short'&&x.answer||x.type==='mcq'&&Array.isArray(x.options)&&x.options.length>=2&&Number.isInteger(x.answer)&&x.options[x.answer]!==undefined)).map(x=>({...x,source:x.source&&nm.includes(norm(x.source))?x.source:''}));if(!qs.length)throw{message:'The AI didn’t return usable questions. Try again.'};A={qs,i:0,res:[],sel:null,rev:false}}catch(e){busy='';render();document.getElementById('terr').textContent=aiErr(e);return}busy='';render()},
+pick:d=>{A.sel=+d.id;A.res[A.i]=A.sel===A.qs[A.i].answer;render()},
+reveal:()=>{A.rev=true;render()},
+self:d=>{A.res[A.i]=d.id==='1';A.sel=-1;act.nextQ()},
+nextQ:()=>{if(A.i+1<A.qs.length){A.i++;A.sel=null;A.rev=false;render();return}
+const cm={};A.qs.forEach((q,i)=>{(cm[q.concept]=cm[q.concept]||[]).push(!!A.res[i])});const cc=Object.entries(cm).map(([k,v])=>[k,Math.round(100*v.filter(Boolean).length/v.length)]);const c=A.res.filter(Boolean).length;
+S.tests.push({id:uid(),sub:S.cl.sub,topic:S.cl.topic,at:Date.now(),items:A.qs.map((q,i)=>({concept:q.concept,ok:!!A.res[i]}))});save();
+A.sum={c,n:A.qs.length,pct:Math.round(100*c/A.qs.length),cc,weak:cc.filter(x=>x[1]<60).map(x=>x[0])};render()},
+closeT:()=>{A=null;render()},
+interp:async()=>{busy='i';render();const f=recs().slice(0,4).map(r=>({topic:r.s.n+' — '+r.t.n,priority:r.lab,reasons:r.why,evidence:r.ev}));try{const t=await ai(`You are an academic analyzer. In 4-6 sentences, explain to the student why these recommendations were generated and what to do first. Use ONLY these measured facts; do not add numbers, scores or study times. If evidence is thin, say so.\n${JSON.stringify(f)}`);A=A||{};A.interp=t}catch(e){A=A||{};A.interp=aiErr(e)}busy='';render()},
+quick:d=>send(d.id),
+send:()=>{const i=document.getElementById('ci');const v=i.value.trim();i.value='';send(v)},
+mood:d=>{const t=today();S.mood=S.mood.filter(x=>x.day!==t);S.mood.push({day:t,v:+d.id});save();render();toast('Saved on this device')},
+breath:()=>{breathing=!breathing;clearInterval(act.bi);if(breathing){let k=0;act.bi=setInterval(()=>{k++;const b=document.getElementById('bl');if(b)b.textContent=k%2?'Breathe out…':'Breathe in…'},4000);setTimeout(()=>{if(breathing){breathing=false;clearInterval(act.bi);render()}},60000)}render()},
+export:async()=>{try{const d=await claude.use('downloads');if(!d)throw 0;await d.save({filename:'studyflow-data.json',data:JSON.stringify(S,null,2)})}catch(e){if(e&&e.code==='declined')return;toast('Export isn’t available in this view')}},
+wipe:()=>confirmBox('Delete all StudyFlow data?','Delete everything',()=>{S={...seed(),sample:false,subs:[],tasks:[],sess:[],tests:[],mood:[]};R=[];A=null;save();render();toast('All data deleted')},'<p class="mut sm">This can’t be undone. Export first if you want a copy.</p>')};
+const chg={
+tdone:d=>{const t=S.tasks.find(x=>x.id===d.id);t.done=!t.done;save();render()},
+tst:(d,b)=>{topics().find(x=>x.t.id===d.id).t.st=b.value;save();render()},
+rev:(d,b)=>{const v=+b.value;if(v>=1&&v<=60){S.cfg.rev=v;save()}},
+fsub:(d,b)=>{S.cl.sub=b.value;S.cl.topic='';save();render()},ftopic:(d,b)=>{S.cl.topic=b.value;save()},
+fm:(d,b)=>{const v=+b.value;if(v>=1&&v<=180){T.fm=v;render()}},bm:(d,b)=>{const v=+b.value;if(v>=1&&v<=60){T.bm=v;render()}},
+mat:(d,b)=>{S.cl.material=b.value.slice(0,60000);save();render()},
+file:(d,b)=>{const f=b.files[0];if(!f)return;if(f.size>5e5){toast('That file is too large (500 KB max).');return}const r=new FileReader();r.onload=()=>{S.cl.material=String(r.result).slice(0,60000);save();render()};r.readAsText(f)},
+cli:d=>{const i=S.cl.items.find(x=>x.id===d.id);i.done=!i.done;save();render()},
+cfg:(d,b)=>{S.cfg[d.id]=b.checked;save()}};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b&&act[b.dataset.a])act[b.dataset.a](b.dataset,b,e)});
+document.addEventListener('change',e=>{const b=e.target.closest('[data-c]');if(b&&chg[b.dataset.c])chg[b.dataset.c](b.dataset,b)});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='ci'){e.preventDefault();act.send()}});
+window.addEventListener('hashchange',()=>{const v=location.hash.slice(1);if(['home','planner','focus','insights','rabbit'].includes(v)&&v!==V){V=v;render()}});
+setInterval(()=>{const c=document.getElementById('clock');if(!c)return;const left=(T.mode==='focus'?T.fm:T.bm)*6e4-el();c.textContent=fmt(left);if(T.run&&left<=0&&!T.done){T.done=1;toast(T.mode==='focus'?'Focus time complete. Finish & log when ready.':'Break over.')}if(left>0)T.done=0},1000);
+render();
+</script></body></html>
